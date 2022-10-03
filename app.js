@@ -46,7 +46,6 @@ const server = http.createServer((req, res) => {
 
 function postHandler(req, res) {
   const htmlContent = fs.readFileSync(__dirname + '/aggiungi.html', 'utf8')
-  console.log(req)
   res.writeHead(200);
   res.end(htmlContent)
 }
@@ -58,7 +57,7 @@ function apiHandler(req, res) {
       let body = '';
       let data;
       req.on('data', chunk => {
-        console.log(chunk)
+          console.log(chunk)
           body += chunk.toString() // convert Buffer to string
       });
       req.on('end', () => {
