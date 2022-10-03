@@ -7,6 +7,11 @@
   <meta name="description" content="" />
 </head>
 <body>
-  <p> <%= r.join(", "); %> </p>
+  <label for="studenti">Scegliere uno studente</label>
+  <select name="studenti" id="studenti">
+    <% r.forEach((e) => { %>
+      <option><%= e %></option>
+    <% }) %>
+  </select>
 </body>
 </html>
