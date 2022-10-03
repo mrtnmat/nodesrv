@@ -4,10 +4,11 @@ const fs = require('fs')
 const http = require('http')
 
 const sqlite3 = require('sqlite3').verbose()
-const http = require('http')
 const ejs = require('ejs')
 const mime = require('mime-types')
-const fs = require('fs')
+
+const { parse } = require('querystring');
+
 
 const hostname = '127.0.0.1'
 const port = 3000;
@@ -19,44 +20,105 @@ const db = new sqlite3.Database(dbpath, (err) => {
   console.log(`Connected to ${dbpath}`)
 })
 
-const r = []
 
-let sql = `SELECT DISTINCT Name name FROM test
-  ORDER BY name`
-
-db.all(sql, [], (err, rows) => {
-  if (err) {
-    throw err
-  }
-  rows.forEach((e) => {
-    r.push(e.name)
-  })
-})
 
 const server = http.createServer((req, res) => {
   switch (req.url) {
     case '/':
     case '/index.html':
-      homeHandler(req, res)
-      break;
+    homeHandler(req, res)
+    break;
     case '/script.js':
     case '/favicon.ico':
-      serveFile(req, res)
-      break;
+    serveFile(req, res)
+    break;
+    case '/insegnanti':
+    apiHandler(req, res)
+    break;
+    case '/insegnanti/add':
+    postHandler(req, res)
+    break;
     default:
-      res.end('not found')
-      break;
+    res.end('not found')
+    break;
   }
-    
 });
+
+function postHandler(req, res) {
+  const htmlContent = fs.readFileSync(__dirname + '/aggiungi.html', 'utf8')
+  console.log(req)
+  res.writeHead(200);
+  res.end(htmlContent)
+}
+
+function apiHandler(req, res) {
+  let sql = ''
+  switch (req.method) {
+    case 'POST':
+      let body = '';
+      let data;
+      req.on('data', chunk => {
+        console.log(chunk)
+          body += chunk.toString() // convert Buffer to string
+      });
+      req.on('end', () => {
+          data = parse(body)
+          res.end('ok')
+          sql = `INSERT INTO insegnanti (Name, Surname)
+            VALUES (?, ?)`
+          db.run(sql, [data.name, data.surname])
+      });
+      console.log(data)
+
+      break;
+
+    case 'GET':
+    sql = `SELECT DISTINCT Name name,
+    Surname surname FROM insegnanti
+    ORDER BY name`
+    
+    db.all(sql, [], (err, rows) => {
+      if (err) {
+        throw err
+      }
+      const r = []
+      rows.forEach((e) => {
+        r.push(`${e.name} ${e.surname}`)
+      })
+      res.setHeader('Content-Type', mime.lookup('json'))
+      res.writeHead(200);
+      res.end(JSON.stringify(r))
+    })
+    break;
+    
+    default:
+    break;
+  }
+  
+}
 
 function homeHandler(req, res) {
   const htmlContent = fs.readFileSync(__dirname + '/index.ejs', 'utf8')
-  const htmlRenderized = ejs.render(htmlContent, {filename: 'index.ejs', r: r})
-  console.log(req.url)
-  res.statusCode = 200
-  res.setHeader('Content-Type', 'html')
-  res.end(htmlRenderized)
+  
+  let sql = `SELECT DISTINCT Name name,
+  Surname surname FROM insegnanti
+  ORDER BY surname`
+  
+  db.all(sql, (err, rows) => {
+    if (err) {
+      throw err
+    }
+    const r = []
+    rows.forEach((e) => {
+      r.push({name: e.name, surname: e.surname})
+    })
+    console.log(r)
+    const htmlRenderized = ejs.render(htmlContent, {filename: 'index.ejs', studenti: r})
+    // send response
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'html')
+    res.end(htmlRenderized)
+  })
 }
 
 function serveFile(req, res) {
