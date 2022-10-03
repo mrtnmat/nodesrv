@@ -30,14 +30,44 @@ db.all(sql, [], (err, rows) => {
   })
 })
 
-const server = createServer((req, res) => {
-    const htmlContent = readFileSync(__dirname + '/index.ejs', 'utf8')
-    const htmlRenderized = render(htmlContent, {filename: 'index.ejs', r: r})
-    console.log('prova')
-    res.statusCode = 200
-    res.setHeader('Content-Type', 'html')
-    res.end(htmlRenderized)
+const server = http.createServer((req, res) => {
+  switch (req.url) {
+    case '/':
+    case '/index.html':
+      homeHandler(req, res)
+      break;
+    case '/script.js':
+    case '/favicon.ico':
+      serveFile(req, res)
+      break;
+    default:
+      res.end('not found')
+      break;
+  }
+    
 });
+
+function homeHandler(req, res) {
+  const htmlContent = fs.readFileSync(__dirname + '/index.ejs', 'utf8')
+  const htmlRenderized = ejs.render(htmlContent, {filename: 'index.ejs', r: r})
+  console.log(req.url)
+  res.statusCode = 200
+  res.setHeader('Content-Type', 'html')
+  res.end(htmlRenderized)
+}
+
+function serveFile(req, res) {
+  fs.readFile(__dirname + req.url, (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end(JSON.stringify(err));
+      return;
+    }
+    res.setHeader('Content-Type', mime.lookup(req.url))
+    res.writeHead(200);
+    res.end(data);
+  })
+}
 
 server.listen(port, hostname, () => {
   console.log(`Server running at http://${hostname}:${port}/`);
