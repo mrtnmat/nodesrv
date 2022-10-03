@@ -10,7 +10,7 @@ const mime = require('mime-types')
 const { parse } = require('querystring');
 
 
-const hostname = '127.0.0.1'
+const hostname = '192.168.1.251'
 const port = 3000;
 const dbpath = './db/test.db'
 const db = new sqlite3.Database(dbpath, (err) => {
@@ -63,12 +63,12 @@ function apiHandler(req, res) {
       });
       req.on('end', () => {
           data = parse(body)
-          res.end('ok')
           sql = `INSERT INTO insegnanti (Name, Surname)
             VALUES (?, ?)`
           db.run(sql, [data.name, data.surname])
+          res.writeHead(301, { "Location": '/' });
+          res.end();
       });
-      console.log(data)
 
       break;
 
