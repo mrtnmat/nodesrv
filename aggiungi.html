@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Aggiungi Insegnanti</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="" />
+</head>
+<body>
+    <label for="form-example">Inserire i dati del professore da aggiungere</label>
+    <form action="/insegnanti" method="post" class="form-example">
+        <div class="form-example">
+            <label for="name">Nome: </label>
+            <input type="text" name="name" id="name" required>
+        </div>
+        <div class="form-example">
+            <label for="surname">Cognome: </label>
+            <input type="text" name="surname" id="surname" required>
+        </div>
+        <div class="form-example">
+            <input type="submit" value="Aggiungi">
+        </div>
+    </form>      
+</body>
+</html>
