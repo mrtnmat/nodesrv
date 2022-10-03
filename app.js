@@ -10,6 +10,8 @@ const db = new sqlite3.Database('./db/test.db', (err) => {
     console.log('Connected to the test database')
 })
 
+var rows = [];
+
 db.serialize(() => {
     db.each(`SELECT Id as id,
                     Name as name
@@ -18,13 +20,18 @@ db.serialize(() => {
             console.error(err.message)
         }
         console.log(row.id + "\t" + row.name);
+        rows.push(row.name);
     })
 })
 
 const server = http.createServer((req, res) => {
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
-  res.end('Hello World');
+  let r = "Database Query Result:\n"
+  rows.forEach((entry) => {
+    r += entry + '\n'
+  })
+  res.end(r);
 });
 
 server.listen(port, hostname, () => {
