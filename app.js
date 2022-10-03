@@ -1,9 +1,9 @@
 'use strict'
 
 const sqlite3 = require('sqlite3').verbose()
-const http = require('http')
-const ejs = require('ejs')
-var fs = require('fs')
+import { createServer } from 'http'
+import { render } from 'ejs'
+import { readFileSync } from 'fs'
 
 const hostname = '127.0.0.1'
 const port = 3000;
@@ -29,9 +29,9 @@ db.all(sql, [], (err, rows) => {
   })
 })
 
-const server = http.createServer((req, res) => {
-    const htmlContent = fs.readFileSync(__dirname + '/index.ejs', 'utf8')
-    const htmlRenderized = ejs.render(htmlContent, {filename: 'index.ejs', r: r})
+const server = createServer((req, res) => {
+    const htmlContent = readFileSync(__dirname + '/index.ejs', 'utf8')
+    const htmlRenderized = render(htmlContent, {filename: 'index.ejs', r: r})
     console.log('prova')
     res.statusCode = 200
     res.setHeader('Content-Type', 'html')
