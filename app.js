@@ -1,9 +1,10 @@
 'use strict'
 
 const sqlite3 = require('sqlite3').verbose()
-import { createServer } from 'http'
-import { render } from 'ejs'
-import { readFileSync } from 'fs'
+const http = require('http')
+const ejs = require('ejs')
+const mime = require('mime-types')
+const fs = require('fs')
 
 const hostname = '127.0.0.1'
 const port = 3000;
