@@ -7,12 +7,24 @@
   <meta name="description" content="" />
 </head>
 <body>
-  <label for="studenti">Scegliere uno studente</label>
-  <select name="studenti" id="studenti">
-    <% r.forEach((e) => { %>
-      <option><%= e %></option>
-    <% }) %>
-  </select>
+  <table>
+    <th>
+      nome
+    </th>
+    <th>
+      cognome
+    </th>
+    <% studenti.forEach(ele => { %>
+      <tr>
+        <td><%-ele.name-%></td>
+        <td><%-ele.surname-%></td>
+      </tr>
+    <%})%>
+  </table>
+  
+  <div id="autocomplete">
+    <input id="insegnanti" type="text" placeholder="Nome Insegnante">
+  </div>
   <script type="text/javascript" src="script.js"></script>
 </body>
 </html>
