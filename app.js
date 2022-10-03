@@ -1,5 +1,8 @@
 'use strict'
 
+const fs = require('fs')
+const http = require('http')
+
 const sqlite3 = require('sqlite3').verbose()
 const http = require('http')
 const ejs = require('ejs')
